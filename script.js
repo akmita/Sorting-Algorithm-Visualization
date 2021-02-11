@@ -1,24 +1,32 @@
-var bubbleSortContainer = document.getElementById("sort-container-1");        
-var selectionSortContainer = document.getElementById("sort-container-2");         
-var numElements = 50;                                                               // Number of elements
-var elementWidth = toString((bubbleSortContainer.offsetWidth / 50) + 4) + "px";     // width of each data element
-var inputHeight = 350;                                                             // max heigh (pixels) of data element
-var sortInterval;
-var isRunning = false;
-
-
 // sort class stores data specific to each sort
 class sort {
-    constructor() {
+    constructor(containerName) {
         this.index = 1;
         this.numSwaps = 0;
+        this.container = document.getElementById(containerName);
+        this.done = false;
     }
 }
 
 
+var sortObj = [];  
+sortObj.push(new sort("sort-container-1"));
+sortObj.push(new sort("sort-container-2"));
+var numElements = 50;                                                               // Number of elements
+var elementWidth = toString((sortObj[0].container.offsetWidth / 50) + 4) + "px";     // width of each data element
+var inputHeight = 350;                                                             // max heigh (pixels) of data element
+var sortInterval= [];
+var isRunning = false;
+             // stores all instances of the sort instances
+
+
+
+
 // Creates new instances of sort, which store associated variables
-selectionSort = new sort();    
-bubbleSort = new sort();
+// selectionSort = new sort();    
+// bubbleSort = new sort();
+
+
 
 
 // add specified number, of HTML elements with random values to specified container
@@ -42,30 +50,30 @@ function createElements(container) {
 
 // switch around bubble sort method based on elements' height
 function run_BubbleSort() {
-    var prevElement = document.getElementById(`B${bubbleSort.index}`);
-    var currElement = document.getElementById(`B${bubbleSort.index - 1}`);
+    var prevElement = document.getElementById(`B${sortObj[0].index}`);
+    var currElement = document.getElementById(`B${sortObj[0].index - 1}`);
     var tempHeight;
 
     // Highlights elements being currently sorted with red
-    if ( bubbleSort.index > 1) { setColor("B" ,bubbleSort.index - 2, "rgb(188, 188, 240)"); }   
-    else            { setColor("B" ,bubbleSort.index - 1, "red"); }                 
-    setColor("B" ,bubbleSort.index, "red");                            
+    if ( sortObj[0].index > 1) { setColor("B" ,sortObj[0].index - 2, "rgb(188, 188, 240)"); }   
+    else            { setColor("B" ,sortObj[0].index - 1, "red"); }                 
+    setColor("B" ,sortObj[0].index, "red");                            
 
     // If elements aren't in order, swap
     if (parseInt(prevElement.style.height) > parseInt(currElement.style.height)) {
         tempHeight = prevElement.style.height;
         prevElement.style.height = currElement.style.height;
         currElement.style.height = tempHeight; 
-        bubbleSort.numSwaps++;
+        sortObj[0].numSwaps++;
     }
     
-    if (bubbleSort.index < numElements - 1) { bubbleSort.index++; }  // increments index to check next element
+    if (sortObj[0].index < numElements - 1) { sortObj[0].index++; }  // increments index to check next element
     else {                                                           // End of current pass
-        setColor("B" ,bubbleSort.index - 1, "rgb(188, 188, 240)");   // Resets colors
-        setColor("B" ,bubbleSort.index, "rgb(188, 188, 240)");
-        if (bubbleSort.numSwaps > 0) {                               // if any elements were swapped last pass, run another pass
-            bubbleSort.index = 1; 
-            bubbleSort.numSwaps = 0;
+        setColor("B" ,sortObj[0].index - 1, "rgb(188, 188, 240)");   // Resets colors
+        setColor("B" ,sortObj[0].index, "rgb(188, 188, 240)");
+        if (sortObj[0].numSwaps > 0) {                               // if any elements were swapped last pass, run another pass
+            sortObj[0].index = 1; 
+            sortObj[0].numSwaps = 0;
         }
         else {                                                       // Else end the sorting
             console.log("Sort finished");
@@ -93,13 +101,47 @@ function run_BubbleSort() {
     // increment start
 }*/
 
+sortObj[1].sort = run_SelectionSort;
+// selectionSort.sort();  
 
 function run_SelectionSort() {
 	console.log("running sort() from selectionsort object");
+    var prevElement = document.getElementById(`S${sortObj[1].index}`);
+    var currElement = document.getElementById(`S${sortObj[1].index - 1}`);
+    var tempHeight;
+
+    // Highlights elements being currently sorted with red
+    if ( sortObj[1].index > 1) { setColor("S" ,sortObj[1].index - 2, "rgb(188, 188, 240)"); }   
+    else            { setColor("S" ,sortObj[1].index - 1, "red"); }                 
+    setColor("S" ,sortObj[1].index, "red");                            
+
+    // If elements aren't in order, swap
+    if (parseInt(prevElement.style.height) > parseInt(currElement.style.height)) {
+        tempHeight = prevElement.style.height;
+        prevElement.style.height = currElement.style.height;
+        currElement.style.height = tempHeight; 
+        sortObj[1].numSwaps++;
+    }
+    
+    if (sortObj[1].index < numElements - 1) { sortObj[1].index++; }   // increments index to check next element
+    else {                                                                  // End of current pass
+        setColor("S" ,sortObj[1].index - 1, "rgb(188, 188, 240)");       // Resets colors
+        setColor("S" ,sortObj[1].index, "rgb(188, 188, 240)");
+        if (sortObj[1].numSwaps > 0) {                               // if any elements were swapped last pass, run another pass
+            sortObj[1].index = 1; 
+            sortObj[1].numSwaps = 0;
+        }
+        else {                                                       // Else end the sorting
+
+            console.log("Sort finished");
+            stopSort();
+            document.getElementById("btn-start").innerHTML = "START";
+            document.getElementById("btn-start").style.background = "rgb(115, 187, 101)";
+        }
+    }
 }
 
-selectionSort.sort = run_SelectionSort;
-selectionSort.sort();  
+
 
 // sets the color of specified element 
 function setColor(prefix ,num, color) {
@@ -128,24 +170,27 @@ function startSort() {
     numElements = (document.getElementById("input-numElements").value != "") ? document.getElementById("input-numElements").value : 10;
     inputHeight = (document.getElementById("input-height").value != "" ) ? document.getElementById("input-numElements").value : 300;
     refreshRate = (document.getElementById("input-speed").value != "" ) ? 1000 / document.getElementById("input-speed").value : 20;
-    elementWidth = (bubbleSortContainer.offsetWidth / numElements) + "px";         
-    console.log("inner HTML = ");  
-    console.log(bubbleSortContainer.innerHTML.length);                             
+    elementWidth = (sortObj[0].container.offsetWidth / numElements) + "px";         
+    console.log("bubble inner HTML = ");  
+    console.log(sortObj[0].container.innerHTML.length);                             
     // Creates elements if they don't exist
-    if (bubbleSortContainer.innerHTML == "") {                                   
+    if (sortObj[0].container.innerHTML == "") {                                   
         console.log("creating new elements");
-        createElements(bubbleSortContainer); 
-        createElements(selectionSortContainer); 
+        createElements(sortObj[0].container); 
+        createElements(sortObj[1].container); 
     }               
-    // STARTS SORTING INTERVAL
-    sortInterval = setInterval(run_BubbleSort, refreshRate);
+    // STARTS SORTING INTERVAL                                      // TODO put this inside sort class
+    sortInterval[0] = setInterval(run_BubbleSort, refreshRate);
+    sortInterval[1] = setInterval(run_SelectionSort, refreshRate);
     isRunning = true;
 }
 
 
 // Stops sorting, sets flag to false
 function stopSort() {
-    clearInterval(sortInterval);
+    for (var i = 0; i < sortInterval.length; i++) {
+        clearInterval(sortInterval[i]);
+    }    
     isRunning = false;
 }
 
@@ -172,8 +217,8 @@ document.getElementById("btn-start").addEventListener("click", ()=>{
 document.getElementById("btn-reset").addEventListener("click", ()=> {
     document.getElementById("btn-start").innerHTML = "START";
     document.getElementById("btn-start").style.background = "rgb(115, 187, 101)";
-    resetElements(bubbleSort, bubbleSortContainer);
-    resetElements(selectionSort, selectionSortContainer);
+    resetElements(sortObj[0], sortObj[0].container);
+    resetElements(sortObj[1], sortObj[1].container);
 
 });
 

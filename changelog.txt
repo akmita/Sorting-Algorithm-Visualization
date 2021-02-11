@@ -1,0 +1,5 @@
+2/10/2021 - extended capabilities of sort class to make the project more modular. now adding new sort algorithms will be a piece of cake. 
+
+What to work on next:
+- implement a selectionsort algorithm, replacing one of the bubblesort
+- implement a way of knowing when to stop the algorithms when they're both done, using the "done" field in Sort class
